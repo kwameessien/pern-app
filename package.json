@@ -5,7 +5,9 @@
   "main": "backend/src/server.js",
   "scripts": {
     "dev": "nodemon backend/src/server.js",
+    "dev:web": "vite",
     "start": "node backend/src/server.js",
+    "build:web": "vite build",
     "db:schema": "psql \"$DATABASE_URL\" -f backend/schema.sql",
     "db:seed": "psql \"$DATABASE_URL\" -f backend/seed.sql"
   },
@@ -20,9 +22,25 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "zod": "^4.4.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
-  }
+    "@tailwindcss/postcss": "^4.2.4",
+    "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.5.0",
+    "nodemon": "^3.1.14",
+    "postcss": "^8.5.12",
+    "tailwindcss": "^4.2.4",
+    "vite": "^8.0.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kwameessien/pern-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kwameessien/pern-app/issues"
+  },
+  "homepage": "https://github.com/kwameessien/pern-app#readme"
 }

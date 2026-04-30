@@ -14,9 +14,18 @@ Portfolio-focused MVP e-commerce app with:
    - `npm run db:schema`
 3. Seed demo data:
    - `npm run db:seed`
-4. Start app:
-   - `npm run dev`
-5. Open `http://localhost:4000`
+4. Build frontend:
+   - `npm run build:web`
+5. Start API + static site:
+   - `npm run dev` (API) or `npm start`
+6. Open `http://localhost:4000`
+
+## Frontend Development
+
+- Run React app in dev mode with hot reload:
+  - `npm run dev:web`
+- Vite app root is `frontend/` and components live in `frontend/src/components`.
+- API calls are proxied from Vite to `http://localhost:4000`.
 
 ## Demo Accounts
 

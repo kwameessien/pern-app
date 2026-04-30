@@ -11,7 +11,7 @@ const { requireAuth, requireAdmin } = require("./auth");
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.resolve(__dirname, "../../frontend")));
+app.use(express.static(path.resolve(__dirname, "../../frontend/dist")));
 
 const registerSchema = z.object({
   name: z.string().min(1),
@@ -283,7 +283,7 @@ app.delete("/api/admin/products/:id", requireAuth, requireAdmin, async (req, res
 });
 
 app.get("*", (_req, res) => {
-  res.sendFile(path.resolve(__dirname, "../../frontend/index.html"));
+  res.sendFile(path.resolve(__dirname, "../../frontend/dist/index.html"));
 });
 
 const port = process.env.PORT || 4000;
