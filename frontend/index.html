@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PERN Store MVP</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>PERN Store MVP</h1>
+      <p id="session"></p>
+    </header>
+
+    <main class="grid">
+      <section>
+        <h2>Auth</h2>
+        <form id="register-form">
+          <input name="name" placeholder="Name" required />
+          <input name="email" placeholder="Email" type="email" required />
+          <input name="password" placeholder="Password (min 6)" type="password" required />
+          <button type="submit">Register</button>
+        </form>
+        <form id="login-form">
+          <input name="email" placeholder="Email" type="email" required />
+          <input name="password" placeholder="Password" type="password" required />
+          <button type="submit">Login</button>
+        </form>
+      </section>
+
+      <section>
+        <h2>Catalog</h2>
+        <select id="category-filter"></select>
+        <div id="products" class="cards"></div>
+      </section>
+
+      <section>
+        <h2>Cart</h2>
+        <div id="cart"></div>
+      </section>
+
+      <section>
+        <h2>Checkout</h2>
+        <form id="checkout-form">
+          <input name="shippingName" placeholder="Shipping Name" required />
+          <input name="shippingAddress" placeholder="Shipping Address" required />
+          <input name="shippingContact" placeholder="Shipping Contact" required />
+          <select name="paymentStatus">
+            <option value="pending">pending</option>
+            <option value="paid">paid</option>
+          </select>
+          <button type="submit">Place Order</button>
+        </form>
+      </section>
+
+      <section>
+        <h2>My Orders</h2>
+        <div id="orders"></div>
+      </section>
+
+      <section>
+        <h2>Admin Product Create</h2>
+        <form id="admin-product-form">
+          <input name="name" placeholder="Name" required />
+          <input name="description" placeholder="Description" required />
+          <input name="imageUrl" placeholder="Image URL" required />
+          <input name="priceCents" placeholder="Price (cents)" type="number" required />
+          <input name="stock" placeholder="Stock" type="number" required />
+          <input name="categoryId" placeholder="Category ID (optional)" type="number" />
+          <button type="submit">Create Product</button>
+        </form>
+      </section>
+
+      <section>
+        <h2>Admin Orders</h2>
+        <div id="admin-orders"></div>
+      </section>
+    </main>
+
+    <p id="status"></p>
+    <script src="/main.js"></script>
+  </body>
+</html>

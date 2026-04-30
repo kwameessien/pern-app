@@ -1,0 +1,28 @@
+{
+  "name": "pern-app",
+  "version": "1.0.0",
+  "description": "MVP PERN e-commerce app",
+  "main": "backend/src/server.js",
+  "scripts": {
+    "dev": "nodemon backend/src/server.js",
+    "start": "node backend/src/server.js",
+    "db:schema": "psql \"$DATABASE_URL\" -f backend/schema.sql",
+    "db:seed": "psql \"$DATABASE_URL\" -f backend/seed.sql"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.20.0",
+    "zod": "^4.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
