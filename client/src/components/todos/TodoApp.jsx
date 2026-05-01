@@ -25,6 +25,7 @@ export default function TodoApp() {
   const [activeTodoId, setActiveTodoId] = useState(null);
   const [loadError, setLoadError] = useState("");
   const [actionError, setActionError] = useState("");
+  const [calendarDate, setCalendarDate] = useState(() => new Date());
 
   async function loadTodos() {
     setIsLoading(true);
@@ -165,12 +166,37 @@ export default function TodoApp() {
     }
   }
 
+  const monthLabel = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric",
+  }).format(calendarDate);
+
+  function handlePreviousMonth() {
+    setCalendarDate((prev) => {
+      const next = new Date(prev);
+      next.setMonth(next.getMonth() - 1);
+      return next;
+    });
+  }
+
+  function handleNextMonth() {
+    setCalendarDate((prev) => {
+      const next = new Date(prev);
+      next.setMonth(next.getMonth() + 1);
+      return next;
+    });
+  }
+
   return (
     <section className="mx-auto flex w-full max-w-[1280px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
       <TodoSidebar />
 
       <div className="flex min-h-[82vh] flex-1 flex-col">
-        <TodoCalendarHeader />
+        <TodoCalendarHeader
+          monthLabel={monthLabel}
+          onPreviousMonth={handlePreviousMonth}
+          onNextMonth={handleNextMonth}
+        />
 
         <div className="flex-1 bg-[#fafbfc] p-4 md:p-6">
           <div className="grid gap-4 lg:grid-cols-[340px_1fr]">
