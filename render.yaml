@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: pern-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm run start
+    envVars:
+      - key: PGHOST
+        fromDatabase:
+          name: pern-db
+          property: host
+      - key: PGPORT
+        fromDatabase:
+          name: pern-db
+          property: port
+      - key: PGDATABASE
+        fromDatabase:
+          name: pern-db
+          property: database
+      - key: PGUSER
+        fromDatabase:
+          name: pern-db
+          property: user
+      - key: PGPASSWORD
+        fromDatabase:
+          name: pern-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+
+  - type: web
+    name: pern-client
+    runtime: node
+    rootDir: client
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: pern-api
+          property: url
+
+databases:
+  - name: pern-db
+    databaseName: pern_app
+    user: pern_user

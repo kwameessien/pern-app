@@ -29,10 +29,53 @@ npm run dev
 
 The client runs at `http://localhost:3000` by default.
 
-### 3) Set up the server (pending initialization)
+### 3) Set up the server
 
-The `server/` folder is currently a placeholder and does not yet contain an Express app.
-Initialize the backend first, then run install/dev commands there.
+```bash
+cd server
+npm install
+npm run dev
+```
+
+The API runs at `http://localhost:5000` by default.
+
+## Environment Variables
+
+Server (`server/.env`):
+- `PORT` (default `5000`)
+- `PGHOST`
+- `PGPORT`
+- `PGDATABASE`
+- `PGUSER`
+- `PGPASSWORD`
+- `JWT_SECRET`
+
+Client (`client/.env.local`):
+- `NEXT_PUBLIC_API_URL` (example: `http://localhost:5000`)
+
+Use the provided examples:
+- `server/.env.example`
+- `client/.env.example`
+
+## Deploy on Render
+
+Platform choice: Render.
+
+This repo now includes `render.yaml` so Render can provision:
+- a Node web service for the API (`pern-api`)
+- a Node web service for the Next.js app (`pern-client`)
+- a managed Postgres database (`pern-db`)
+
+Deploy steps:
+- Push this repo to GitHub
+- In Render, create a new Blueprint and select the repo
+- Render will read `render.yaml` and create services/resources
+- After deploy, run SQL migrations against the Render Postgres database
+
+Render environment variables are defined in `render.yaml`:
+- API service gets DB credentials from `pern-db`
+- API service gets generated `JWT_SECRET`
+- Client gets `NEXT_PUBLIC_API_URL` from the API service URL
 
 ## Recommended Root Scripts
 
@@ -56,7 +99,7 @@ Then run commands from the repo root, for example:
 npm run dev:client
 ```
 
-After the Express server is initialized, you can add:
+For server commands, also add:
 
 ```json
 "dev:server": "npm run dev --prefix server",
