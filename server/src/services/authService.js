@@ -48,10 +48,23 @@ function signAuthToken(user) {
   );
 }
 
+function verifyAuthToken(token) {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    const error = new Error("JWT_SECRET is not configured");
+    error.statusCode = 500;
+    error.code = "SERVER_CONFIG_ERROR";
+    throw error;
+  }
+
+  return jwt.verify(token, secret);
+}
+
 module.exports = {
   findUserByEmail,
   createUser,
   hashPassword,
   comparePassword,
   signAuthToken,
+  verifyAuthToken,
 };
