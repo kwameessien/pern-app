@@ -1,33 +1,45 @@
-# PERN Store MVP
+# PERN App
 
-Portfolio-focused MVP e-commerce app with:
-- customer flow (browse, cart, checkout, order history)
-- admin flow (product management, order status updates)
-- PostgreSQL-backed data model
+Monorepo structure for a Next.js client and Node/Express server.
 
-## Setup
+## Project Structure
 
-1. Copy env values:
-   - `cp .env.example .env`
-2. Create database and run schema:
-   - `createdb pern_app`
-   - `npm run db:schema`
-3. Seed demo data:
-   - `npm run db:seed`
-4. Build frontend:
-   - `npm run build:web`
-5. Start API + static site:
-   - `npm run dev` (API) or `npm start`
-6. Open `http://localhost:4000`
+```text
+.
+├── client/    # Next.js app (App Router)
+└── server/    # Node/Express API
+```
 
-## Frontend Development
+## Getting Started
 
-- Run React app in dev mode with hot reload:
-  - `npm run dev:web`
-- Vite app root is `frontend/` and components live in `frontend/src/components`.
-- API calls are proxied from Vite to `http://localhost:4000`.
+### 1) Clone and open the project
 
-## Demo Accounts
+```bash
+git clone <your-repo-url>
+cd pern-app
+```
 
-- Admin: `admin@example.com` / `password123`
-- Customer: `customer@example.com` / `password123`
+### 2) Set up the Next.js client
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+The client runs at `http://localhost:3000` by default.
+
+### 3) Set up the server
+
+```bash
+cd server
+npm install
+npm run dev
+```
+
+## Next Steps
+
+- Set up the Express API in `server/` if it is not initialized yet.
+- Add environment variables in local `.env` files.
+- Connect the Next.js client to the server API.
+
