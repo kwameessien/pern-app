@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -11,26 +11,34 @@ export default function TodoApp() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const loadTodos = useCallback(async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/todos`);
-      if (!response.ok) {
-        throw new Error(`Failed to load todos (${response.status})`);
-      }
-      const payload = await response.json();
-      setError("");
-      setTodos(payload.data || []);
-    } catch (err) {
-      setError(err.message || "Failed to load todos");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadTodos();
-  }, [loadTodos]);
+    let isMounted = true;
+
+    async function loadTodosOnMount() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/todos`);
+        if (!response.ok) {
+          throw new Error(`Failed to load todos (${response.status})`);
+        }
+        const payload = await response.json();
+        if (!isMounted) return;
+        setError("");
+        setTodos(payload.data || []);
+      } catch (err) {
+        if (!isMounted) return;
+        setError(err.message || "Failed to load todos");
+      } finally {
+        if (!isMounted) return;
+        setIsLoading(false);
+      }
+    }
+
+    loadTodosOnMount();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   async function handleCreateTodo(event) {
     event.preventDefault();
