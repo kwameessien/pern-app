@@ -1,7 +1,5 @@
 export default function PageShell({ children }) {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-6 py-16">
-      {children}
-    </main>
+    <main className="min-h-screen bg-[#f5f6f8] p-4 md:p-6">{children}</main>
   );
 }

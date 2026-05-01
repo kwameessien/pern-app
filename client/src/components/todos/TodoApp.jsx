@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import TodoSidebar from "@/components/todos/TodoSidebar";
+import TodoCalendarHeader from "@/components/todos/TodoCalendarHeader";
+import TodoComposerPanel from "@/components/todos/TodoComposerPanel";
+import TodoCalendarGrid from "@/components/todos/TodoCalendarGrid";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -162,85 +166,34 @@ export default function TodoApp() {
   }
 
   return (
-    <section className="mt-8 w-full max-w-2xl">
-      <form onSubmit={handleCreateTodo} className="flex gap-3">
-        <input
-          type="text"
-          value={newTitle}
-          onChange={(event) => setNewTitle(event.target.value)}
-          placeholder="Add a new todo..."
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-zinc-500"
-        />
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="rounded-md bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isSubmitting ? "Adding..." : "Add"}
-        </button>
-      </form>
+    <section className="mx-auto flex w-full max-w-[1280px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+      <TodoSidebar />
 
-      {actionError ? (
-        <p className="mt-4 rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {actionError}
-        </p>
-      ) : null}
+      <div className="flex min-h-[82vh] flex-1 flex-col">
+        <TodoCalendarHeader />
 
-      <div className="mt-6">
-        {isLoading ? (
-          <p className="text-sm text-zinc-500">Loading todos...</p>
-        ) : loadError ? (
-          <div className="rounded-md border border-red-300 bg-red-50 px-3 py-3">
-            <p className="text-sm text-red-700">{loadError}</p>
-            <button
-              type="button"
-              onClick={handleRetryLoad}
-              className="mt-2 rounded-md border border-red-300 bg-white px-3 py-1 text-xs text-red-700"
-            >
-              Retry
-            </button>
+        <div className="flex-1 bg-[#fafbfc] p-4 md:p-6">
+          <div className="grid gap-4 lg:grid-cols-[340px_1fr]">
+            <TodoComposerPanel
+              todosCount={todos.length}
+              newTitle={newTitle}
+              onTitleChange={setNewTitle}
+              onSubmit={handleCreateTodo}
+              isSubmitting={isSubmitting}
+              actionError={actionError}
+              isLoading={isLoading}
+              loadError={loadError}
+              onRetryLoad={handleRetryLoad}
+            />
+
+            <TodoCalendarGrid
+              todos={todos}
+              activeTodoId={activeTodoId}
+              onToggleTodo={handleToggleTodo}
+              onDeleteTodo={handleDeleteTodo}
+            />
           </div>
-        ) : todos.length === 0 ? (
-          <p className="text-sm text-zinc-500">No todos yet.</p>
-        ) : (
-          <ul className="space-y-2">
-            {todos.map((todo) => (
-              <li
-                key={todo.id}
-                className="flex items-center justify-between rounded-md border border-zinc-200 px-3 py-2"
-              >
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => handleToggleTodo(todo)}
-                    disabled={activeTodoId === todo.id}
-                    className="rounded-md border border-zinc-300 px-2 py-1 text-xs disabled:opacity-60"
-                  >
-                    {todo.completed ? "Mark pending" : "Mark done"}
-                  </button>
-                  <span className="text-sm">{todo.title}</span>
-                  <span
-                    className={`rounded-full px-2 py-1 text-xs ${
-                      todo.completed
-                        ? "bg-green-100 text-green-700"
-                        : "bg-zinc-100 text-zinc-700"
-                    }`}
-                  >
-                    {todo.completed ? "Completed" : "Pending"}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteTodo(todo.id)}
-                  disabled={activeTodoId === todo.id}
-                  className="rounded-md border border-red-300 px-2 py-1 text-xs text-red-700 disabled:opacity-60"
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        </div>
       </div>
     </section>
   );
