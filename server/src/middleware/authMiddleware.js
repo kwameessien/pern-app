@@ -25,11 +25,16 @@ function requireAuth(req, _res, next) {
     };
 
     next();
-  } catch (_error) {
-    const error = new Error("Invalid or expired token");
-    error.statusCode = 401;
-    error.code = "UNAUTHORIZED";
-    next(error);
+  } catch (error) {
+    if (error.statusCode && error.statusCode >= 500) {
+      next(error);
+      return;
+    }
+
+    const unauthorizedError = new Error("Invalid or expired token");
+    unauthorizedError.statusCode = 401;
+    unauthorizedError.code = "UNAUTHORIZED";
+    next(unauthorizedError);
   }
 }
 
