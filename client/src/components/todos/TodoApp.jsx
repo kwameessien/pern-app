@@ -9,6 +9,7 @@ export default function TodoApp() {
   const [newTitle, setNewTitle] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTodoId, setActiveTodoId] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -68,6 +69,54 @@ export default function TodoApp() {
     }
   }
 
+  async function handleToggleTodo(todo) {
+    try {
+      setActiveTodoId(todo.id);
+      setError("");
+      const response = await fetch(`${API_BASE_URL}/todos/${todo.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: todo.title,
+          completed: !todo.completed,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update todo (${response.status})`);
+      }
+
+      const payload = await response.json();
+      setTodos((prev) =>
+        prev.map((item) => (item.id === todo.id ? payload.data : item)),
+      );
+    } catch (err) {
+      setError(err.message || "Failed to update todo");
+    } finally {
+      setActiveTodoId(null);
+    }
+  }
+
+  async function handleDeleteTodo(todoId) {
+    try {
+      setActiveTodoId(todoId);
+      setError("");
+      const response = await fetch(`${API_BASE_URL}/todos/${todoId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete todo (${response.status})`);
+      }
+
+      setTodos((prev) => prev.filter((item) => item.id !== todoId));
+    } catch (err) {
+      setError(err.message || "Failed to delete todo");
+    } finally {
+      setActiveTodoId(null);
+    }
+  }
+
   return (
     <section className="mt-8 w-full max-w-2xl">
       <form onSubmit={handleCreateTodo} className="flex gap-3">
@@ -105,16 +154,34 @@ export default function TodoApp() {
                 key={todo.id}
                 className="flex items-center justify-between rounded-md border border-zinc-200 px-3 py-2"
               >
-                <span className="text-sm">{todo.title}</span>
-                <span
-                  className={`rounded-full px-2 py-1 text-xs ${
-                    todo.completed
-                      ? "bg-green-100 text-green-700"
-                      : "bg-zinc-100 text-zinc-700"
-                  }`}
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handleToggleTodo(todo)}
+                    disabled={activeTodoId === todo.id}
+                    className="rounded-md border border-zinc-300 px-2 py-1 text-xs disabled:opacity-60"
+                  >
+                    {todo.completed ? "Mark pending" : "Mark done"}
+                  </button>
+                  <span className="text-sm">{todo.title}</span>
+                  <span
+                    className={`rounded-full px-2 py-1 text-xs ${
+                      todo.completed
+                        ? "bg-green-100 text-green-700"
+                        : "bg-zinc-100 text-zinc-700"
+                    }`}
+                  >
+                    {todo.completed ? "Completed" : "Pending"}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteTodo(todo.id)}
+                  disabled={activeTodoId === todo.id}
+                  className="rounded-md border border-red-300 px-2 py-1 text-xs text-red-700 disabled:opacity-60"
                 >
-                  {todo.completed ? "Completed" : "Pending"}
-                </span>
+                  Delete
+                </button>
               </li>
             ))}
           </ul>
