@@ -4,30 +4,51 @@ import { useEffect, useState } from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
+async function getApiErrorMessage(response, fallbackMessage) {
+  try {
+    const payload = await response.json();
+    return payload?.error?.message || fallbackMessage;
+  } catch {
+    return fallbackMessage;
+  }
+}
+
 export default function TodoApp() {
   const [todos, setTodos] = useState([]);
   const [newTitle, setNewTitle] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTodoId, setActiveTodoId] = useState(null);
-  const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const [actionError, setActionError] = useState("");
+
+  async function loadTodos() {
+    setIsLoading(true);
+    setLoadError("");
+
+    const response = await fetch(`${API_BASE_URL}/todos`);
+    if (!response.ok) {
+      const message = await getApiErrorMessage(
+        response,
+        `Failed to load todos (${response.status})`,
+      );
+      throw new Error(message);
+    }
+
+    const payload = await response.json();
+    setTodos(payload.data || []);
+  }
 
   useEffect(() => {
     let isMounted = true;
 
     async function loadTodosOnMount() {
       try {
-        const response = await fetch(`${API_BASE_URL}/todos`);
-        if (!response.ok) {
-          throw new Error(`Failed to load todos (${response.status})`);
-        }
-        const payload = await response.json();
+        await loadTodos();
         if (!isMounted) return;
-        setError("");
-        setTodos(payload.data || []);
       } catch (err) {
         if (!isMounted) return;
-        setError(err.message || "Failed to load todos");
+        setLoadError(err.message || "Failed to load todos");
       } finally {
         if (!isMounted) return;
         setIsLoading(false);
@@ -48,7 +69,7 @@ export default function TodoApp() {
 
     try {
       setIsSubmitting(true);
-      setError("");
+      setActionError("");
       const response = await fetch(`${API_BASE_URL}/todos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -56,14 +77,18 @@ export default function TodoApp() {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to create todo (${response.status})`);
+        const message = await getApiErrorMessage(
+          response,
+          `Failed to create todo (${response.status})`,
+        );
+        throw new Error(message);
       }
 
       const payload = await response.json();
       setTodos((prev) => [...prev, payload.data]);
       setNewTitle("");
     } catch (err) {
-      setError(err.message || "Failed to create todo");
+      setActionError(err.message || "Failed to create todo");
     } finally {
       setIsSubmitting(false);
     }
@@ -72,7 +97,7 @@ export default function TodoApp() {
   async function handleToggleTodo(todo) {
     try {
       setActiveTodoId(todo.id);
-      setError("");
+      setActionError("");
       const response = await fetch(`${API_BASE_URL}/todos/${todo.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -83,7 +108,11 @@ export default function TodoApp() {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to update todo (${response.status})`);
+        const message = await getApiErrorMessage(
+          response,
+          `Failed to update todo (${response.status})`,
+        );
+        throw new Error(message);
       }
 
       const payload = await response.json();
@@ -91,7 +120,7 @@ export default function TodoApp() {
         prev.map((item) => (item.id === todo.id ? payload.data : item)),
       );
     } catch (err) {
-      setError(err.message || "Failed to update todo");
+      setActionError(err.message || "Failed to update todo");
     } finally {
       setActiveTodoId(null);
     }
@@ -100,20 +129,35 @@ export default function TodoApp() {
   async function handleDeleteTodo(todoId) {
     try {
       setActiveTodoId(todoId);
-      setError("");
+      setActionError("");
       const response = await fetch(`${API_BASE_URL}/todos/${todoId}`, {
         method: "DELETE",
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to delete todo (${response.status})`);
+        const message = await getApiErrorMessage(
+          response,
+          `Failed to delete todo (${response.status})`,
+        );
+        throw new Error(message);
       }
 
       setTodos((prev) => prev.filter((item) => item.id !== todoId));
     } catch (err) {
-      setError(err.message || "Failed to delete todo");
+      setActionError(err.message || "Failed to delete todo");
     } finally {
       setActiveTodoId(null);
+    }
+  }
+
+  async function handleRetryLoad() {
+    try {
+      setLoadError("");
+      await loadTodos();
+    } catch (err) {
+      setLoadError(err.message || "Failed to load todos");
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -136,15 +180,26 @@ export default function TodoApp() {
         </button>
       </form>
 
-      {error ? (
+      {actionError ? (
         <p className="mt-4 rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}
+          {actionError}
         </p>
       ) : null}
 
       <div className="mt-6">
         {isLoading ? (
           <p className="text-sm text-zinc-500">Loading todos...</p>
+        ) : loadError ? (
+          <div className="rounded-md border border-red-300 bg-red-50 px-3 py-3">
+            <p className="text-sm text-red-700">{loadError}</p>
+            <button
+              type="button"
+              onClick={handleRetryLoad}
+              className="mt-2 rounded-md border border-red-300 bg-white px-3 py-1 text-xs text-red-700"
+            >
+              Retry
+            </button>
+          </div>
         ) : todos.length === 0 ? (
           <p className="text-sm text-zinc-500">No todos yet.</p>
         ) : (
