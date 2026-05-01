@@ -29,12 +29,38 @@ npm run dev
 
 The client runs at `http://localhost:3000` by default.
 
-### 3) Set up the server
+### 3) Set up the server (pending initialization)
+
+The `server/` folder is currently a placeholder and does not yet contain an Express app.
+Initialize the backend first, then run install/dev commands there.
+
+## Recommended Root Scripts
+
+Add a root `package.json` so you can run both apps without changing directories.
+
+```json
+{
+  "name": "pern-app",
+  "private": true,
+  "scripts": {
+    "dev:client": "npm run dev --prefix client",
+    "build:client": "npm run build --prefix client",
+    "start:client": "npm run start --prefix client"
+  }
+}
+```
+
+Then run commands from the repo root, for example:
 
 ```bash
-cd server
-npm install
-npm run dev
+npm run dev:client
+```
+
+After the Express server is initialized, you can add:
+
+```json
+"dev:server": "npm run dev --prefix server",
+"start:server": "npm run start --prefix server"
 ```
 
 ## Next Steps
